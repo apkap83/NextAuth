@@ -6,7 +6,7 @@ const Nav = async () => {
   const session = await getServerSession(options);
   return (
     <header className="bg-gray-600 text-gray-100">
-      <nav className="flex justify-between items-center w-full px-10 py-4">
+      <nav className="flex justify-between items-center w-full px-10 py-2">
         <div>My Site</div>
         <div className="flex gap-10">
           <Link href="/">Home</Link>
