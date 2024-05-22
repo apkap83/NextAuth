@@ -1,7 +1,7 @@
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import User from "../../../(db)/models/User_orig";
+import { sequelize } from "../../../(db)";
 import bcrypt from "bcrypt";
 
 export const options = {
@@ -53,24 +53,42 @@ export const options = {
       },
 
       async authorize(credentials) {
+        const { AppUser, AppRole, AppPermission } = sequelize.models;
+
         try {
-          const foundUser = await User.findOne({ email: credentials.email })
-            .lean()
-            .exec();
+          const foundUser = await AppUser.scope("withPassword").findOne({
+            where: {
+              email: credentials.email,
+            },
+            include: {
+              model: AppRole,
+              include: [AppPermission],
+            },
+          });
 
           if (foundUser) {
-            console.log("User Exists");
             const match = await bcrypt.compare(
               credentials.password,
               foundUser.password
             );
 
             if (match) {
-              console.log("Good Password");
-
               delete foundUser.password;
-              foundUser["role"] = "Unverified Email";
-              return foundUser;
+              const roles = foundUser.AppRoles.map((role) => role.roleName);
+
+              const permissions = foundUser.AppRoles.flatMap((role) =>
+                role.AppPermissions.map(
+                  (permission) => permission.permissionName
+                )
+              );
+
+              // return foundUser;
+              return {
+                id: foundUser.id,
+                email: foundUser.email,
+                roles,
+                permissions,
+              };
             }
           }
         } catch (error) {
@@ -83,12 +101,18 @@ export const options = {
 
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.role = user.role;
+      if (user) {
+        token.roles = user.roles;
+        token.permissions = user.permissions;
+      }
       return token;
     },
 
     async session({ session, token }) {
-      if (session?.user) session.user.role = token.role;
+      if (session?.user) {
+        session.user.roles = token.roles;
+        session.user.permissions = token.permissions;
+      }
       return session;
     },
   },

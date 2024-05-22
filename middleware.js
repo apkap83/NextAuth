@@ -5,11 +5,11 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(req) {
     console.log(req.nextUrl.pathname);
-    console.log(req.nextauth.token.role);
+    console.log(req.nextauth.token.roles);
 
     if (
       req.nextUrl.pathname.startsWith("/CreateUser") &&
-      req.nextauth.token.role != "admin"
+      !req.nextauth.token.roles.includes("Admin")
     ) {
       return NextResponse.rewrite(new URL("/Denied", req.url));
     }
