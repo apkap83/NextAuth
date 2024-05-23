@@ -1,7 +1,7 @@
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { sequelize } from "../../../(db)";
+import { sequelize } from "@/(db)";
 import bcrypt from "bcrypt";
 
 export const options = {

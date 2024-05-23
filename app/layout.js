@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
       <AuthProvider>
         <body className="bg-gray-100">
           <Nav />
-          <div className="m-2">{children}</div>
+          <div className="flex flex-grow flex-col">{children}</div>
         </body>
       </AuthProvider>
     </html>

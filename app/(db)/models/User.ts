@@ -53,6 +53,7 @@ export const AppUser = (sequelize: Sequelize) => {
       },
       active: {
         type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
     },
     {

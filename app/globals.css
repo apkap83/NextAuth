@@ -8,6 +8,17 @@
   }
 
   a {
-    @apply underline font-bold;
   }
+}
+
+body,
+html {
+  height: 100%; /* Ensure body and html take up full viewport height */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+}
+
+body {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
 }
