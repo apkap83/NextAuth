@@ -1,21 +1,45 @@
 import React, { useState } from "react";
-// import { useRouter } from "next/router";
+import { useRouter, redirect } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios"; // Import axios for making API requests
+import axios, { AxiosError } from "axios"; // Import axios for making API requests
+import { faker } from "@faker-js/faker";
 
 import { FaMobileRetro } from "react-icons/fa6";
 import { CgNametag } from "react-icons/cg";
 import { FaKey } from "react-icons/fa";
 
 function CreateUserModal({ closeModal }) {
+  const [error, setError] = useState(null); // State variable to hold error message
+
+  const handleSubmissionError = (error) => {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      setError(error.response.data.message);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      setError(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      setError("Error", error.message);
+    }
+    console.log(error.config);
+  };
+
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      userName: "",
-      email: "",
-      mobilePhone: "",
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      userName: faker.internet.userName(),
+      password: faker.internet.password(),
+      email: faker.internet.email(),
+      mobilePhone: faker.phone.number(),
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -33,7 +57,7 @@ function CreateUserModal({ closeModal }) {
         console.log("User created successfully:", response.data);
         closeModal(); // Close modal after successful creation
       } catch (error) {
-        console.log("Error creating user:", error);
+        return handleSubmissionError(error);
       }
     },
   });
@@ -168,6 +192,12 @@ function CreateUserModal({ closeModal }) {
             <p className="text-red-500 text-sm">{formik.errors.mobilePhone}</p>
           ) : null}
 
+          {/* Render error message */}
+          {error ? (
+            <div className="mt-2 mb-1 text-red-500 text-sm">Error: {error}</div>
+          ) : (
+            <div></div>
+          )}
           <div className="mt-5 flex justify-around">
             <button className="btn btn-primary" type="submit">
               Submit
@@ -193,7 +223,7 @@ const validationSchema = Yup.object({
     .email("Invalid email address")
     .required("Email is required"),
   mobilePhone: Yup.string()
-    .matches(/^\d{10}$/, "Mobile phone must be 10 digits")
+    // .matches(/^\d{10}$/, "Mobile phone must be 10 digits")
     .required("Mobile phone is required"),
 });
 
