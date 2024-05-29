@@ -1,34 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import CreateUserModal from "./CreateUserModal";
-import { useRouter, redirect } from "next/navigation";
+import CreateUserModal from "./Modals/CreateUser/CreateUserModal";
+import DeleteUserModal from "./Modals/DeleteUser/DeleteUserModal";
+import { UsersTab } from "./Tabs/UsersTab";
 
 const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
   const [activeTab, setActiveTab] = useState("Users");
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
-
-  const openModal = () => {
-    setShowCreateUserModal(true);
-  };
-
-  const closeModal = () => {
-    setShowCreateUserModal(false);
-  };
-
-  const renderActiveness = (active) => {
-    return active ? (
-      <span className="bg-green-400 p-2 rounded-lg text-white">Active</span>
-    ) : (
-      <span className="bg-red-400 p-2 rounded-full text-white">Inactive</span>
-    );
-  };
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState({
+    visible: false,
+    userDetails: {
+      firstName: null,
+      lastName: null,
+      userName: null,
+    },
+  });
 
   return (
-    <div className="m-0 p-5 flex-grow flex flex-col bg-teal-50">
-      <div className="text-center text-4xl">Admin Dashboard</div>
+    <div className="m-0 p-5 flex flex-col bg-gray-50 h-[850px]">
+      <div className="text-center text-4xl">Security Management</div>
 
-      <div className="flex-grow pt-5">
+      <div className="pt-5 flex flex-col flex-grow">
         <div className="border-b">
           <div
             role="tablist"
@@ -61,37 +54,11 @@ const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
         </div>
 
         {activeTab === "Users" && (
-          <table className="table table-s">
-            <thead>
-              <tr>
-                <th></th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>User Name</th>
-                <th>E-mail</th>
-                <th>Mobile Phone</th>
-                <th>Role</th>
-                <th>State</th>
-              </tr>
-            </thead>
-            <tbody>
-              {usersList.map((user, index) => (
-                <tr key={user.userName + index}>
-                  <th>{index + 1}</th>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>{user.userName}</td>
-                  <td>{user.email}</td>
-                  <td>{user.mobilePhone}</td>
-                  <td>
-                    {user.AppRoles.map((role) => role.roleName).join(", ")}
-                  </td>
-                  <td>{renderActiveness(user.active)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot></tfoot>
-          </table>
+          <UsersTab
+            usersList={usersList}
+            setShowCreateUserModal={setShowCreateUserModal}
+            setShowDeleteUserModal={setShowDeleteUserModal}
+          />
         )}
 
         {activeTab === "Roles" && (
@@ -143,14 +110,17 @@ const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
           </div>
         )}
       </div>
-      <div className="py-2 flex gap-2 ">
-        <button className="btn btn-primary btn-sm" onClick={openModal}>
-          Create User
-        </button>
-        <button className="btn btn-secondary btn-sm">Delete User</button>
-      </div>
 
-      {showCreateUserModal && <CreateUserModal closeModal={closeModal} />}
+      {showCreateUserModal && (
+        <CreateUserModal closeModal={() => setShowCreateUserModal(false)} />
+      )}
+
+      {showDeleteUserModal.visible && (
+        <DeleteUserModal
+          userDetails={showDeleteUserModal.userDetails}
+          closeModal={() => setShowDeleteUserModal({ visible: false })}
+        />
+      )}
     </div>
   );
 };

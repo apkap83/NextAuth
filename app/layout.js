@@ -1,7 +1,9 @@
 import "./globals.css";
+import "react-tooltip/dist/react-tooltip.css";
 
 import Nav from "./(components)/nav";
 import AuthProvider from "./(components)/AuthProvider";
+import ToastProvider from "./(components)/toast-provider";
 
 export const metadata = {
   title: "Create Next App",
@@ -12,9 +14,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <AuthProvider>
-        <body className="bg-gray-100">
+        <body className="bg-gray-50">
           <Nav />
-          <div className="flex flex-grow flex-col">{children}</div>
+          <div className="flex flex-col h-screen">
+            <ToastProvider>{children}</ToastProvider>
+          </div>
         </body>
       </AuthProvider>
     </html>

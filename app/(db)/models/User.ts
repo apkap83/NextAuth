@@ -42,6 +42,15 @@ export const AppUser = (sequelize: Sequelize) => {
         type: DataTypes.STRING(20),
         allowNull: false,
         unique: true,
+        validate: {
+          notNull: {
+            msg: "Mobile Phone is required",
+          },
+          len: {
+            args: [10, 20],
+            msg: "Mobile Phone must be between 10 and 20 characters",
+          },
+        },
       },
       email: {
         type: DataTypes.STRING(254),

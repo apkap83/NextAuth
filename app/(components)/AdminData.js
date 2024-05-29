@@ -14,8 +14,6 @@ export const getAdminData = async () => {
     permission.toJSON()
   );
 
-  console.log("Roles of first user:", plainUsersList[0].AppRoles);
-
   return {
     usersList: plainUsersList,
     rolesList: plainRolesList,

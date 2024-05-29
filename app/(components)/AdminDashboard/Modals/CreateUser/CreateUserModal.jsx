@@ -1,37 +1,28 @@
 import React, { useState } from "react";
-import { useRouter, redirect } from "next/navigation";
+import { useFormState } from "react-dom";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios, { AxiosError } from "axios"; // Import axios for making API requests
 import { faker } from "@faker-js/faker";
-
 import { FaMobileRetro } from "react-icons/fa6";
 import { CgNametag } from "react-icons/cg";
 import { FaKey } from "react-icons/fa";
 
+import { useToastMessage } from "../../../../(hooks)/use-toast-message";
+import { useFormReset } from "../../../../(hooks)/use-form-reset";
+import { FieldError } from "./field-error";
+
+import { EMPTY_FORM_STATE } from "@/utils/to-form-state";
+import { SubmitButton } from "@/(components)/SubmitButton";
+
+import { createUser } from "@/lib/actions";
+import { FormStateError } from "./form-state-error";
+
 function CreateUserModal({ closeModal }) {
-  const [error, setError] = useState(null); // State variable to hold error message
+  const [formState, action] = useFormState(createUser, EMPTY_FORM_STATE);
 
-  const handleSubmissionError = (error) => {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-      setError(error.response.data.message);
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      setError(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      setError("Error", error.message);
-    }
-    console.log(error.config);
-  };
-
+  const noScriptFallback = useToastMessage(formState);
+  const formRef = useFormReset(formState, closeModal);
   const formik = useFormik({
     initialValues: {
       firstName: faker.person.firstName(),
@@ -40,26 +31,16 @@ function CreateUserModal({ closeModal }) {
       password: faker.internet.password(),
       email: faker.internet.email(),
       mobilePhone: faker.phone.number(),
+
+      // firstName: "",
+      // lastName: "",
+      // userName: "",
+      // password: "",
+      // email: "",
+      // mobilePhone: "",
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      try {
-        // Send POST request to server endpoint
-        const response = await axios.post("/api/Users", values);
-
-        // if (response.status === 201) {
-        //   router.push("/dashboard/invoices");
-        // } else {
-        //   console.error("Error:", response.data.message);
-        // }
-
-        // Handle success response
-        console.log("User created successfully:", response.data);
-        closeModal(); // Close modal after successful creation
-      } catch (error) {
-        return handleSubmissionError(error);
-      }
-    },
+    // onSubmit: async (values, { setSubmitting }) => {},
   });
 
   return (
@@ -69,7 +50,9 @@ function CreateUserModal({ closeModal }) {
 
         <form
           className="flex flex-col gap-3 pt-3"
-          onSubmit={formik.handleSubmit}
+          // onSubmit={formik.handleSubmit}
+          action={action}
+          ref={formRef}
         >
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -90,10 +73,7 @@ function CreateUserModal({ closeModal }) {
               placeholder="First Name"
             />
           </label>
-
-          {formik.touched.firstName && formik.errors.firstName ? (
-            <p className="text-red-500 text-sm">{formik.errors.firstName}</p>
-          ) : null}
+          <FieldError formik={formik} name="firstName" />
 
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -114,9 +94,7 @@ function CreateUserModal({ closeModal }) {
               placeholder="Last Name"
             />
           </label>
-          {formik.touched.lastName && formik.errors.lastName ? (
-            <p className="text-red-500 text-sm">{formik.errors.lastName}</p>
-          ) : null}
+          <FieldError formik={formik} name="lastName" />
 
           <label className="input input-bordered flex items-center gap-2">
             <CgNametag className="w-4 h-4 opacity-70" />
@@ -130,9 +108,7 @@ function CreateUserModal({ closeModal }) {
               placeholder="User Name"
             />
           </label>
-          {formik.touched.userName && formik.errors.userName ? (
-            <p className="text-red-500 text-sm">{formik.errors.userName}</p>
-          ) : null}
+          <FieldError formik={formik} name="userName" />
 
           <label className="input input-bordered flex items-center gap-2">
             <FaKey className="w-4 h-4 opacity-70" />
@@ -146,9 +122,7 @@ function CreateUserModal({ closeModal }) {
               placeholder="Password"
             />
           </label>
-          {formik.touched.password && formik.errors.password ? (
-            <p className="text-red-500 text-sm">{formik.errors.password}</p>
-          ) : null}
+          <FieldError formik={formik} name="password" />
 
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -170,9 +144,7 @@ function CreateUserModal({ closeModal }) {
               placeholder="Email"
             />
           </label>
-          {formik.touched.email && formik.errors.email ? (
-            <p className="text-red-500 text-sm">{formik.errors.email}</p>
-          ) : null}
+          <FieldError formik={formik} name="email" />
 
           <label className="input input-bordered flex items-center gap-2">
             <FaMobileRetro className="w-4 h-4 opacity-70" />
@@ -188,23 +160,28 @@ function CreateUserModal({ closeModal }) {
             />
           </label>
 
-          {formik.touched.mobilePhone && formik.errors.mobilePhone ? (
-            <p className="text-red-500 text-sm">{formik.errors.mobilePhone}</p>
-          ) : null}
+          <FieldError formik={formik} name="mobilePhone" />
 
-          {/* Render error message */}
-          {error ? (
-            <div className="mt-2 mb-1 text-red-500 text-sm">Error: {error}</div>
-          ) : (
-            <div></div>
-          )}
+          <div
+            className="flex h-8 items-end space-x-1"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <FormStateError formState={formState} />
+          </div>
           <div className="mt-5 flex justify-around">
-            <button className="btn btn-primary" type="submit">
-              Submit
-            </button>
+            <SubmitButton
+              label="Create"
+              loading="Creating ..."
+              isValid={formik.isValid}
+              isDirty={formik.dirty}
+            />
+
             <button className="btn btn-" onClick={closeModal}>
               Close
             </button>
+
+            {noScriptFallback}
           </div>
         </form>
       </div>
