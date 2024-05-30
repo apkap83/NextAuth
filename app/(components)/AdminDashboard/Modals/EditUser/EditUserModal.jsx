@@ -1,34 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { useFormState } from "react-dom";
-
-import { useFormik } from "formik";
+import React, { useEffect } from "react";
 import * as Yup from "yup";
-import { faker } from "@faker-js/faker";
-import { FaMobileRetro } from "react-icons/fa6";
+import { useFormState } from "react-dom";
+import { useFormik } from "formik";
+import { FieldError } from "../CreateUser/field-error";
 import { CgNametag } from "react-icons/cg";
-import { FaKey } from "react-icons/fa";
-
 import { useToastMessage } from "../../../../(hooks)/use-toast-message";
-import { FieldError } from "./field-error";
-
 import { EMPTY_FORM_STATE } from "@/utils/to-form-state";
 import { SubmitButton } from "@/(components)/SubmitButton";
+import { editUser } from "@/lib/actions";
+import { FormStateError } from "../CreateUser/form-state-error";
+import { FaMobileRetro } from "react-icons/fa6";
 
-import { createUser } from "@/lib/actions";
-import { FormStateError } from "./form-state-error";
+const validationSchema = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  userName: Yup.string().required("User name is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  mobilePhone: Yup.string()
+    // .matches(/^\d{10}$/, "Mobile phone must be 10 digits")
+    .required("Mobile phone is required"),
+});
 
-function CreateUserModal({ closeModal }) {
-  const [formState, action] = useFormState(createUser, EMPTY_FORM_STATE);
+const EditUserModal = ({ userDetails, closeModal }) => {
+  const [formState, action] = useFormState(editUser, EMPTY_FORM_STATE);
 
   const noScriptFallback = useToastMessage(formState);
+
   const formik = useFormik({
     initialValues: {
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-      userName: faker.internet.userName(),
-      password: faker.internet.password(),
-      email: faker.internet.email(),
-      mobilePhone: faker.phone.number(),
+      firstName: userDetails.firstName,
+      lastName: userDetails.lastName,
+      userName: userDetails.userName,
+      email: userDetails.email,
+      mobilePhone: userDetails.mobilePhone,
     },
     validationSchema: validationSchema,
     // onSubmit: async (values, { setSubmitting }) => {},
@@ -41,14 +47,9 @@ function CreateUserModal({ closeModal }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white px-8 py-3 rounded-lg">
-        <h3 className="font-bold text-lg text-center">Create User Form</h3>
+        <h3 className="font-bold text-lg text-center">Edit User Form</h3>
 
-        <form
-          className="flex flex-col gap-3 pt-3"
-          // onSubmit={formik.handleSubmit}
-          action={action}
-          // ref={formRef}
-        >
+        <form className="flex flex-col gap-3 pt-3" action={action}>
           <label className="input input-bordered flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -66,6 +67,7 @@ function CreateUserModal({ closeModal }) {
               onBlur={formik.handleBlur}
               className="grow"
               placeholder="First Name"
+              autoFocus
             />
           </label>
           <FieldError formik={formik} name="firstName" />
@@ -91,7 +93,7 @@ function CreateUserModal({ closeModal }) {
           </label>
           <FieldError formik={formik} name="lastName" />
 
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 text-gray-400">
             <CgNametag className="w-4 h-4 opacity-70" />
             <input
               type="text"
@@ -101,23 +103,10 @@ function CreateUserModal({ closeModal }) {
               onBlur={formik.handleBlur}
               className="grow"
               placeholder="User Name"
+              readOnly
             />
           </label>
           <FieldError formik={formik} name="userName" />
-
-          <label className="input input-bordered flex items-center gap-2">
-            <FaKey className="w-4 h-4 opacity-70" />
-            <input
-              type="password"
-              name="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="grow"
-              placeholder="Password"
-            />
-          </label>
-          <FieldError formik={formik} name="password" />
 
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -166,8 +155,8 @@ function CreateUserModal({ closeModal }) {
           </div>
           <div className="mt-5 flex justify-around">
             <SubmitButton
-              label="Create"
-              loading="Creating ..."
+              label="Update"
+              loading="Updating ..."
               isValid={formik.isValid}
               isDirty={formik.dirty}
             />
@@ -182,21 +171,6 @@ function CreateUserModal({ closeModal }) {
       </div>
     </div>
   );
-}
+};
 
-const validationSchema = Yup.object({
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
-  userName: Yup.string().required("User name is required"),
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters long")
-    .required("Password is required"),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  mobilePhone: Yup.string()
-    // .matches(/^\d{10}$/, "Mobile phone must be 10 digits")
-    .required("Mobile phone is required"),
-});
-
-export default CreateUserModal;
+export default EditUserModal;

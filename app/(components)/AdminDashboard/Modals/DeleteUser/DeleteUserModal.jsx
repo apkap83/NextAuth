@@ -51,7 +51,7 @@ function DeleteUserModal({ userDetails, closeModal }) {
               });
             }}
           >
-            Confirm?
+            {isPending ? "Deleting..." : "Confirm"}
           </button>
 
           <button className="btn btn-" onClick={closeModal}>

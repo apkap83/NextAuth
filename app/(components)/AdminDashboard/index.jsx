@@ -3,11 +3,23 @@
 import React, { useState } from "react";
 import CreateUserModal from "./Modals/CreateUser/CreateUserModal";
 import DeleteUserModal from "./Modals/DeleteUser/DeleteUserModal";
+import EditUserModal from "./Modals/EditUser/EditUserModal";
+
 import { UsersTab } from "./Tabs/UsersTab";
 
 const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
   const [activeTab, setActiveTab] = useState("Users");
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [showEditUserModal, setShowEditUserModal] = useState({
+    visible: false,
+    userDetails: {
+      firstName: null,
+      lastName: null,
+      userName: null,
+      email: null,
+      mobilePhone: null,
+    },
+  });
   const [showDeleteUserModal, setShowDeleteUserModal] = useState({
     visible: false,
     userDetails: {
@@ -58,6 +70,7 @@ const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
             usersList={usersList}
             setShowCreateUserModal={setShowCreateUserModal}
             setShowDeleteUserModal={setShowDeleteUserModal}
+            setShowEditUserModal={setShowEditUserModal}
           />
         )}
 
@@ -119,6 +132,13 @@ const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
         <DeleteUserModal
           userDetails={showDeleteUserModal.userDetails}
           closeModal={() => setShowDeleteUserModal({ visible: false })}
+        />
+      )}
+
+      {showEditUserModal.visible && (
+        <EditUserModal
+          userDetails={showEditUserModal.userDetails}
+          closeModal={() => setShowEditUserModal({ visible: false })}
         />
       )}
     </div>

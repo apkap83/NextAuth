@@ -1,11 +1,13 @@
 import { useRef, useEffect } from "react";
 import { FormState } from "@/utils/to-form-state";
 
-const useFormReset = (formState: FormState, closeModal) => {
+const useFormReset = (formState: FormState, closeModal, formik) => {
   const formRef = useRef<HTMLFormElement>(null);
   const prevTimestamp = useRef(formState.timestamp);
 
   useEffect(() => {
+    formik.resetForm();
+    console.log("formik", formik);
     if (!formRef.current) return;
 
     if (
@@ -14,7 +16,8 @@ const useFormReset = (formState: FormState, closeModal) => {
     ) {
       formRef.current.reset();
       prevTimestamp.current = formState.timestamp;
-      closeModal();
+      formik.resetForm();
+      // closeModal();
     }
   }, [formState.status, formState.timestamp]);
 
