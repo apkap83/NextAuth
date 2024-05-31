@@ -6,6 +6,19 @@ const {
 
 export const populateDB = async () => {
   await AppUser.findOrCreate({
+    where: { username: "admin" },
+    defaults: {
+      firstName: "Administrator",
+      lastName: "Administrator",
+      userName: "admin",
+      password: "a12345",
+      mobilePhone: "0123456789",
+      email: "nms_system_support@nova.gr",
+      active: true,
+    },
+  });
+
+  await AppUser.findOrCreate({
     where: { username: "akapetan" },
     defaults: {
       firstName: "Apostolos",
@@ -73,6 +86,12 @@ export const populateDB = async () => {
 
   const adminUser = await AppUser.findOne({
     where: {
+      userName: "admin",
+    },
+  });
+
+  const akapetanUser = await AppUser.findOne({
+    where: {
       userName: "akapetan",
     },
   });
@@ -88,8 +107,12 @@ export const populateDB = async () => {
       permissionName: "Read/Write",
     },
   });
+
   // @ts-ignore
   await adminUser.addAppRole(adminRole);
+
+  // @ts-ignore
+  await akapetanUser.addAppRole(adminRole);
 
   // @ts-ignore
   await adminRole.addAppPermission(permission);

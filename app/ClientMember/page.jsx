@@ -12,7 +12,7 @@ const Member = () => {
   });
   return (
     <div>
-      <h1>Member Client Session</h1>
+      <h1>Client Member Session</h1>
       <p>{session?.user?.email}</p>
       <p>{session?.user?.roles.join(", ")}</p>
       <p>{session?.user?.permissions.join(", ")}</p>

@@ -9,13 +9,13 @@ export default withAuth(
     console.log(req.nextauth.token.roles);
     console.log(req.nextauth.token.permissions);
 
-    if (
-      (req.nextUrl.pathname.startsWith("/CreateUser") ||
-        req.nextUrl.pathname.startsWith("/Admin")) &&
-      !req.nextauth.token.roles.includes(AppRoleTypes.Admin)
-    ) {
-      return NextResponse.rewrite(new URL("/Denied", req.url));
-    }
+    // if (
+    //   (req.nextUrl.pathname.startsWith("/CreateUser") ||
+    //     req.nextUrl.pathname.startsWith("/Admin")) &&
+    //   !req.nextauth.token.roles.includes(AppRoleTypes.Admin)
+    // ) {
+    //   return NextResponse.rewrite(new URL("/Denied", req.url));
+    // }
   },
   {
     callbacks: {

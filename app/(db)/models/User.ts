@@ -89,6 +89,17 @@ export const AppUser = (sequelize: Sequelize) => {
             user.setDataValue("password", hashedPassword);
           }
         },
+        beforeUpdate: async (user) => {
+          // @ts-ignore
+          if (user.changed("password")) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(
+              user.getDataValue("password"),
+              salt
+            );
+            user.setDataValue("password", hashedPassword);
+          }
+        },
 
         // TODO: Error: Lock wait timeout exceeded; try restarting transaction
         // afterCreate: async (user: Model<UserAttributes>) => {

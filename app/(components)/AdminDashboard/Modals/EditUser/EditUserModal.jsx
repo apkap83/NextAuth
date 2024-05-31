@@ -6,7 +6,7 @@ import { FieldError } from "../CreateUser/field-error";
 import { CgNametag } from "react-icons/cg";
 import { useToastMessage } from "../../../../(hooks)/use-toast-message";
 import { EMPTY_FORM_STATE } from "@/utils/to-form-state";
-import { SubmitButton } from "@/(components)/SubmitButton";
+import { SubmitButton } from "@/(components)/ui/SubmitButton";
 import { editUser } from "@/lib/actions";
 import { FormStateError } from "../CreateUser/form-state-error";
 import { FaMobileRetro } from "react-icons/fa6";
@@ -46,7 +46,7 @@ const EditUserModal = ({ userDetails, closeModal }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white px-8 py-3 rounded-lg">
+      <div className="bg-white px-8 py-3 border-[1px] border-blue-900 shadow-2xl rounded-lg">
         <h3 className="font-bold text-lg text-center">Edit User Form</h3>
 
         <form className="flex flex-col gap-3 pt-3" action={action}>

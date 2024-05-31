@@ -1,7 +1,7 @@
 import "./globals.css";
 import "react-tooltip/dist/react-tooltip.css";
 
-import Nav from "./(components)/nav";
+import Nav from "./(components)/Nav";
 import AuthProvider from "./(components)/AuthProvider";
 import ToastProvider from "./(components)/toast-provider";
 

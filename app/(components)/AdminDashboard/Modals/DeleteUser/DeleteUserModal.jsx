@@ -1,12 +1,14 @@
 import React, { useTransition } from "react";
 import { toast } from "react-hot-toast";
 import { deleteUser } from "@/lib/actions";
+import { CloseButton } from "@/(components)/ui/CloseButton";
+import { ConfirmButton } from "@/(components)/ui/ConfirmButton";
 
 function DeleteUserModal({ userDetails, closeModal }) {
   const [isPending, startTransition] = useTransition();
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white px-8 py-3 rounded-lg">
+      <div className="bg-white px-8 py-3 rounded-lg border-[1px] shadow-2xl border-red-900">
         <h3 className="mt-5 font-bold text-lg text-center">
           Confirmation - Delete User
         </h3>
@@ -27,8 +29,8 @@ function DeleteUserModal({ userDetails, closeModal }) {
         </div>
 
         <div className="mt-5 mb-5 flex justify-around">
-          <button
-            className="btn btn-primary"
+          <ConfirmButton
+            className="text-red-400 shadow-md"
             disabled={isPending}
             onClick={() => {
               startTransition(async () => {
@@ -50,13 +52,10 @@ function DeleteUserModal({ userDetails, closeModal }) {
                 }
               });
             }}
-          >
-            {isPending ? "Deleting..." : "Confirm"}
-          </button>
+            label={isPending ? "Deleting..." : "Confirm"}
+          />
 
-          <button className="btn btn-" onClick={closeModal}>
-            Close
-          </button>
+          <CloseButton label="Close" onClick={closeModal} />
         </div>
       </div>
     </div>

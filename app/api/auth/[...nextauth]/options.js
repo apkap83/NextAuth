@@ -85,6 +85,7 @@ export const options = {
               // return foundUser;
               return {
                 id: foundUser.id,
+                userName: foundUser.userName,
                 email: foundUser.email,
                 roles,
                 permissions,
@@ -102,6 +103,7 @@ export const options = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.userName = user.userName;
         token.roles = user.roles;
         token.permissions = user.permissions;
       }
@@ -110,6 +112,7 @@ export const options = {
 
     async session({ session, token }) {
       if (session?.user) {
+        session.user.userName = token.userName;
         session.user.roles = token.roles;
         session.user.permissions = token.permissions;
       }

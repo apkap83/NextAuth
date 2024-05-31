@@ -12,7 +12,7 @@ import { useToastMessage } from "../../../../(hooks)/use-toast-message";
 import { FieldError } from "./field-error";
 
 import { EMPTY_FORM_STATE } from "@/utils/to-form-state";
-import { SubmitButton } from "@/(components)/SubmitButton";
+import { SubmitButton } from "@/(components)/ui/SubmitButton";
 
 import { createUser } from "@/lib/actions";
 import { FormStateError } from "./form-state-error";

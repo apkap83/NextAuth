@@ -1,37 +1,42 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+
 import CreateUserModal from "./Modals/CreateUser/CreateUserModal";
 import DeleteUserModal from "./Modals/DeleteUser/DeleteUserModal";
 import EditUserModal from "./Modals/EditUser/EditUserModal";
+import PasswordResetModal from "./Modals/PasswordReset/PasswordResetModal";
 
-import { UsersTab } from "./Tabs/UsersTab";
+import { UsersTab } from "./Tabs/UsersTab/UsersTab";
+
+const userDetailsInitalState = {
+  firstName: null,
+  lastName: null,
+  userName: null,
+  email: null,
+  mobilePhone: null,
+};
 
 const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
   const [activeTab, setActiveTab] = useState("Users");
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState({
+    visible: false,
+    userDetails: userDetailsInitalState,
+  });
   const [showEditUserModal, setShowEditUserModal] = useState({
     visible: false,
-    userDetails: {
-      firstName: null,
-      lastName: null,
-      userName: null,
-      email: null,
-      mobilePhone: null,
-    },
+    userDetails: userDetailsInitalState,
   });
   const [showDeleteUserModal, setShowDeleteUserModal] = useState({
     visible: false,
-    userDetails: {
-      firstName: null,
-      lastName: null,
-      userName: null,
-    },
+    userDetails: userDetailsInitalState,
   });
 
   return (
     <div className="m-0 p-5 flex flex-col bg-gray-50 h-[850px]">
-      <div className="text-center text-4xl">Security Management</div>
+      <div className="text-center text-4xl"></div>
 
       <div className="pt-5 flex flex-col flex-grow">
         <div className="border-b">
@@ -71,6 +76,7 @@ const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
             setShowCreateUserModal={setShowCreateUserModal}
             setShowDeleteUserModal={setShowDeleteUserModal}
             setShowEditUserModal={setShowEditUserModal}
+            setShowPasswordResetModal={setShowPasswordResetModal}
           />
         )}
 
@@ -139,6 +145,13 @@ const AdminDashboard = ({ usersList, rolesList, permissionsList }) => {
         <EditUserModal
           userDetails={showEditUserModal.userDetails}
           closeModal={() => setShowEditUserModal({ visible: false })}
+        />
+      )}
+
+      {showPasswordResetModal.visible && (
+        <PasswordResetModal
+          userDetails={showPasswordResetModal.userDetails}
+          closeModal={() => setShowPasswordResetModal({ visible: false })}
         />
       )}
     </div>
