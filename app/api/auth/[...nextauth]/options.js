@@ -98,6 +98,35 @@ export const options = {
         return null;
       },
     }),
+    Credentials({
+      name: "LDAP",
+      credentials: {
+        email: { label: "DN", type: "text", placeholder: "" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        const client = ldap.createClient({
+          url: process.env.LDAP_URI,
+        });
+
+        console.log("*** client", client);
+
+        return new Promise((resolve, reject) => {
+          client.bind(credentials.username, credentials.password, (error) => {
+            if (error) {
+              console.error("Failed to bind to LDAP", error);
+              reject(new Error("Invalid credentials"));
+            } else {
+              console.log("Logged in");
+              resolve({
+                username: credentials.username,
+                roles: ["user"], // Default role
+              });
+            }
+          });
+        });
+      },
+    }),
   ],
 
   callbacks: {
